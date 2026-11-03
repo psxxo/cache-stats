@@ -1,0 +1,43 @@
+{
+  "id": "cache-stats",
+  "name": "Cache Stats",
+  "version": "1.1.0",
+  "description": "Composer cache hit-rate pill with a cache-structure popover.",
+  "categories": [
+    "other"
+  ],
+  "uiCapabilities": [
+    "accessory"
+  ],
+  "activation": {
+    "onStartup": true
+  },
+  "contracts": {},
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "pool": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "intervalMs": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "controlUi": {
+    "entry": "dist/control-ui/457c9dcac3e9/index.js"
+  }
+}
