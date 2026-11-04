@@ -7,7 +7,7 @@
 
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { DatabaseSync } from "node:sqlite";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import os from "node:os";
@@ -16,21 +16,31 @@ const PLUGIN_ID = "cache-stats";
 const METHOD = "cache-stats.session";
 const RESET_METHOD = "cache-stats.reset";
 const HERE = dirname(fileURLToPath(import.meta.url));
-const RESET_STATE = join(HERE, "reset-state.json");
+const STATE_HOME = process.env.OPENCLAW_HOME ?? join(os.homedir(), ".openclaw");
+// 插件可能从 tmp 快照目录加载，状态必须写到稳定位置，否则重启即丢。
+const RESET_STATE = join(STATE_HOME, "cache-stats", "reset-state.json");
 
 /** 重置时间表：sessionId → epochMs；只存在插件目录，不碰会话数据。 */
 function readResetMap() {
   try { return JSON.parse(readFileSync(RESET_STATE, "utf8")) ?? {}; } catch { return {}; }
 }
 function writeResetMap(map) {
-  try { writeFileSync(RESET_STATE, JSON.stringify(map, null, 2) + "\n"); } catch {}
+  try {
+    mkdirSync(dirname(RESET_STATE), { recursive: true });
+    writeFileSync(RESET_STATE, JSON.stringify(map, null, 2) + "\n");
+  } catch (error) {
+    console.error(`[cache-stats] reset state write failed: ${error?.message ?? error}`);
+  }
 }
 function resetAtOf(sessionId) {
   const value = readResetMap()[sessionId];
   return typeof value === "number" ? value : undefined;
 }
 const HOME = process.env.OPENCLAW_HOME ?? join(os.homedir(), ".openclaw");
-const ENGINE_DIR = join(HOME, "workspace", "lib", "cache-stats");
+// 发布包自带只读适配器；本地开发时仍可回落到工作区 lib。
+const ENGINE_DIR = existsSync(join(HERE, "lib", "store.mjs"))
+  ? join(HERE, "lib")
+  : join(HOME, "workspace", "lib", "cache-stats");
 
 /** Agent id embedded in a session key (`agent:<id>:...`). */
 function agentOf(sessionKey) {
@@ -109,7 +119,7 @@ export async function sessionStats(sessionKey, options = {}) {
 
   const store = await import(join(ENGINE_DIR, "store.mjs"));
   const engine = await import(join(ENGINE_DIR, "engine.mjs"));
-  const since = resetAtOf(sessionId);
+  const since = resetAtOf(sessionId) ?? resetAtOf(sessionKey);
   const folded = store.collect(agentId, { session: sessionId, bins: options.bins ?? 10, since });
   const turns = options.turns ?? 8;
   return {
@@ -303,14 +313,17 @@ export default definePluginEntry({
         try {
           const sessionKey = params?.sessionKey;
           const agentId = agentOf(sessionKey);
+          if (!agentId) throw new Error("无法识别当前会话");
           const sessionId = sessionIdOf(sessionKey);
-          if (!agentId || !sessionId) throw new Error("无法识别当前会话");
+          const key = sessionId || sessionKey;
           const map = readResetMap();
-          map[sessionId] = Date.now();
+          map[key] = Date.now();
           writeResetMap(map);
           statsCache.delete(sessionKey ?? "");
-          respond(true, { ok: true, sessionId, resetAt: map[sessionId] }, undefined);
+          api.logger?.info?.(`[cache-stats] reset ${sessionKey} -> ${key}`);
+          respond(true, { ok: true, sessionId, resetAt: map[key] }, undefined);
         } catch (error) {
+          api.logger?.warn?.(`[cache-stats] reset failed: ${error?.message ?? error}`);
           respond(false, undefined, { message: error?.message ?? String(error) });
         }
       }, { scope: "operator.read" });
