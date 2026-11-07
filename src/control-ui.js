@@ -96,9 +96,9 @@ const STYLE = `
 .cs-cell b { font-weight: 600; font-variant-numeric: tabular-nums; }
 .cs-sub { margin: 12px 0 6px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .5; }
 .cs-turns { display: grid; gap: 3px; font-variant-numeric: tabular-nums; }
-.cs-turn { display: grid; grid-template-columns: 34px 54px 1fr 1fr; gap: 6px; align-items: baseline; }
+.cs-turn { display: grid; grid-template-columns: 52px 54px 1fr 1fr; gap: 6px; align-items: baseline; }
 .cs-turn span { opacity: .78; }
-.cs-turn .cs-n { opacity: .45; }
+.cs-turn .cs-n { opacity: .45; white-space: nowrap; }
 .cs-turn .cs-warn { color: #d9534f; opacity: 1; }
 .cs-hist { display: grid; gap: 4px; }
 .cs-hist-row { display: grid; grid-template-columns: 62px 1fr 62px; gap: 6px; align-items: center; }
