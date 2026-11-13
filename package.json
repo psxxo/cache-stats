@@ -1,28 +1,28 @@
 {
-  "name": "cache-stats",
-  "version": "1.1.2",
-  "description": "Composer cache hit-rate pill with a cache-structure popover.",
-  "type": "module",
-  "license": "MIT",
-  "files": [
-    "index.js",
-    "openclaw.plugin.json",
-    "dist",
-    "src",
-    "lib"
+ "name": "cache-stats",
+ "version": "1.2.0",
+ "description": "Composer cache hit-rate pill with a cache-structure popover.",
+ "type": "module",
+ "license": "MIT",
+ "files": [
+  "index.js",
+  "openclaw.plugin.json",
+  "dist",
+  "src",
+  "lib"
+ ],
+ "openclaw": {
+  "extensions": [
+   "./index.js"
   ],
-  "openclaw": {
-    "extensions": [
-      "./index.js"
-    ],
-    "controlUi": "./src/control-ui.js",
-    "compat": {
-      "pluginApi": ">=2026.10.9",
-      "minGatewayVersion": "2026.10.9"
-    },
-    "build": {
-      "openclawVersion": "2026.10.9",
-      "pluginSdkVersion": "2026.10.9"
-    }
+  "controlUi": "./src/control-ui.js",
+  "compat": {
+   "pluginApi": ">=2026.10.9",
+   "minGatewayVersion": "2026.10.9"
+  },
+  "build": {
+   "openclawVersion": "2026.10.9",
+   "pluginSdkVersion": "2026.10.9"
   }
+ }
 }

@@ -1,0 +1,519 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.bunny.net; script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.bunny.net; font-src data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.bunny.net; img-src data:; media-src data: https: blob:; connect-src https://wxyg.tail2f3e0d.ts.net:18575;"><title>系统监控</title><style>:root{color-scheme:light dark;
+--surface:#faf9f7;--card:#ffffff;--elevated:#ffffff;
+--text:#403c35;--text-strong:#211e1a;--muted:#6e6960;
+--border:#e8e4dc;--border-strong:#d6d0c5;
+--accent:#bd4531;--accent-fill:#bd4531;--accent-fg:#ffffff;
+--ok:#15803d;--warn:#b45309;--danger:#dc2626;--info:#2563eb;
+--radius:10px;
+--radius-full:9999px;--scrollbar-size:12px;--scrollbar-thumb-inset:3px;
+--scrollbar-thumb:color-mix(in srgb,var(--muted) 32%,transparent);
+--scrollbar-thumb-hover:color-mix(in srgb,var(--muted) 64%,transparent);
+--font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+--font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--accent-subtle:color-mix(in srgb,var(--accent) 10%,transparent);
+--ok-subtle:color-mix(in srgb,var(--ok) 10%,transparent);
+--warn-subtle:color-mix(in srgb,var(--warn) 12%,transparent);
+--danger-subtle:color-mix(in srgb,var(--danger) 10%,transparent);
+--info-subtle:color-mix(in srgb,var(--info) 10%,transparent)}
+@media (prefers-color-scheme:dark){:root{
+--surface:#0e1015;--card:#161920;--elevated:#191c24;
+--text:#d4d4d8;--text-strong:#f4f4f5;--muted:#8b8b94;
+--border:#1e2028;--border-strong:#2e3040;
+--accent:#ff5c5c;--accent-fill:#d13c3c;--accent-fg:#ffffff;
+--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--info:#3b82f6}}
+*{box-sizing:border-box}@supports not selector(::-webkit-scrollbar-thumb){*{scrollbar-color:var(--scrollbar-thumb) transparent;scrollbar-width:thin}}html,body{margin:0}::-webkit-scrollbar{width:var(--scrollbar-size);height:var(--scrollbar-size);background:var(--surface)}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}::-webkit-scrollbar-button{display:none}::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);background-clip:content-box;border:var(--scrollbar-thumb-inset) solid transparent;border-radius:var(--radius-full)}::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover);background-clip:content-box}.openclaw-chat-host,.openclaw-chat-host body{scrollbar-width:none}.openclaw-chat-host::-webkit-scrollbar,.openclaw-chat-host body::-webkit-scrollbar{display:none}
+body{display:flow-root;font:14px/1.5 var(--font-body);color:var(--text)}
+h1,h2,h3{margin:0 0 8px;color:var(--text-strong);font-weight:600}
+h1{font-size:18px}h2{font-size:16px}h3{font-size:14px}
+p{margin:0 0 8px}
+a{color:var(--accent)}
+button{font:13px var(--font-body);color:var(--text);background:var(--card);border:1px solid var(--border-strong);border-radius:var(--radius);padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent-fill);color:var(--accent-fg);border-color:transparent}
+input,select,textarea{font:13px var(--font-body);color:var(--text);background:var(--elevated);border:1px solid var(--border-strong);border-radius:var(--radius);padding:6px 10px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:12px;padding:4px 8px}
+td{padding:6px 8px;border-top:1px solid var(--border)}
+code,pre{font-family:var(--font-mono);font-size:12px;background:var(--card);border-radius:4px}
+code{padding:1px 5px}pre{padding:10px;overflow-x:auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.badge{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--accent-subtle);color:var(--accent)}
+.badge.ok{background:var(--ok-subtle);color:var(--ok)}
+.badge.warn{background:var(--warn-subtle);color:var(--warn)}
+.badge.danger{background:var(--danger-subtle);color:var(--danger)}
+.badge.info{background:var(--info-subtle);color:var(--info)}
+.metric{font-size:24px;font-weight:600;color:var(--text-strong)}
+.muted{color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.svg-widget{display:grid;place-items:center}.svg-widget>svg{max-width:100%}</style></head><body><script>(()=>{if(!window.parent||window.parent===window||Object.prototype.hasOwnProperty.call(window,"openclaw"))return;const parent=window.parent;const post=parent.postMessage.bind(parent);const P=Promise;const then=P.prototype.then;const ErrorCtor=Error;const stringify=String;const freeze=Object.freeze;const define=Object.defineProperty;const push=Array.prototype.push;const shift=Array.prototype.shift;const listen=window.addEventListener.bind(window);const path=Event.prototype.composedPath;const prevent=Event.prototype.preventDefault;const test=RegExp.prototype.test;const later=setTimeout.bind(window);const cancel=clearTimeout.bind(window);const c=new MessageChannel();const promptPost=c.port1.postMessage.bind(c.port1);const b=new MessageChannel();const bridgePost=b.port1.postMessage.bind(b.port1);const promptWaiting=[];let inlinePromptReady=false;c.port1.addEventListener("message",event=>{if(event.data?.type!=="openclaw:widget-prompt-host-ready"||inlinePromptReady)return;inlinePromptReady=true;while(promptWaiting.length){const entry=shift.call(promptWaiting);if(entry)entry.inline();}});c.port1.start();let act=null;try{const ua=navigator.userActivation;const d=ua&&Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ua),"isActive");if(d&&d.get)act=d.get.bind(ua);}catch{}post({type:"openclaw:widget-prompt-offer"},"*",[c.port2]);post({type:"openclaw:widget-bridge-port-offer"},"*",[b.port2]);let ticket=null;let controlUiBaseUrl=null;let sequence=0;let hostInitExpired=false;const pending=new Map();const waiting=[];const initTimer=later(()=>{hostInitExpired=true;while(waiting.length){const entry=shift.call(waiting);if(entry)entry.reject(new ErrorCtor("widget host capabilities unavailable"));}while(promptWaiting.length){const entry=shift.call(promptWaiting);if(entry)entry.reject(new ErrorCtor("widget prompt host unavailable"));}},5000);b.port1.addEventListener("message",event=>{const data=event.data;if(data?.type==="openclaw:widget-host-init"&&typeof data.ticket==="string"){ticket=data.ticket;const base=data.controlUiBaseUrl;controlUiBaseUrl=typeof base==="string"&&/^https?:\/\//.test(base)?base:null;bridgePost({type:"openclaw:widget-host-init-ack",ticket});cancel(initTimer);while(waiting.length){const entry=shift.call(waiting);if(entry)entry.send();}while(promptWaiting.length){const entry=shift.call(promptWaiting);if(entry)entry.send();}return;}if(data?.type!=="openclaw:widget-bridge-response"||typeof data.id!=="string")return;const entry=pending.get(data.id);if(!entry)return;pending.delete(data.id);if(data.ok===true)entry.resolve(data.result);else entry.reject(new ErrorCtor(typeof data.error==="string"?data.error:"widget host request failed"));});b.port1.start();const request=(method,params)=>new P((resolve,reject)=>{const send=()=>{const id="widget-"+(++sequence);pending.set(id,{resolve,reject});try{bridgePost({type:"openclaw:widget-bridge-request",id,method,params,ticket});}catch(error){pending.delete(id);reject(error);}};if(ticket)send();else if(hostInitExpired)reject(new ErrorCtor("widget host capabilities unavailable"));else push.call(waiting,{send,reject});});const activate=event=>{if(event.isTrusted!==true||!ticket||event.defaultPrevented||event.shiftKey||event.altKey)return;const auxiliary=event.type==="auxclick"&&event.button===1;if(!auxiliary&&!(event.type==="click"&&event.button===0))return;for(let index=0,entries=path.call(event);index<entries.length;index++){const anchor=entries[index];if(anchor?.tagName!=="A")continue;const url=anchor.href;if(!url)continue;if(!auxiliary&&anchor.target!=="_blank")return;if(!test.call(/^https?:\/\//i,url))return;prevent.call(event);then.call(request("host.open",{url}),()=>{},()=>{});return;}};listen("click",activate);listen("auxclick",activate);const sendPrompt=text=>{if(!act||act()!==true)return P.resolve(false);const value=stringify(text);if(ticket)return request("prompt.send",{text:value});return new P((resolve,reject)=>{const send=()=>{const result=request("prompt.send",{text:value});then.call(result,resolve,reject);};const inline=()=>{promptPost({type:"openclaw:widget-prompt",prompt:value});resolve(true);};if(inlinePromptReady)inline();else if(hostInitExpired)reject(new ErrorCtor("widget prompt host unavailable"));else push.call(promptWaiting,{send,inline,reject});});};const host={};define(host,"controlUiBaseUrl",{enumerable:true,get:()=>controlUiBaseUrl});freeze(host);const api=freeze({host,prompt:freeze({send:sendPrompt}),state:freeze({emit:payload=>request("state.emit",{payload})}),data:freeze({read:(bindingId,params)=>request("data.read",{bindingId:stringify(bindingId),params})}),action:freeze({run:(action,params)=>request("action.run",{action:stringify(action),params:params===undefined?{}:params})}),cron:freeze({trigger:jobId=>request("cron.trigger",{jobId:stringify(jobId)})})});define(window,"openclaw",{value:api,writable:false,configurable:false});window.sendPrompt=text=>{void sendPrompt(text);};define(window,"sendPrompt",{value:window.sendPrompt,writable:false,configurable:false});post({type:"openclaw:widget-bridge-ready"},"*");})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const post=window.parent.postMessage.bind(window.parent);const listen=window.addEventListener.bind(window);const stringify=String;const slice=Function.prototype.call.bind(String.prototype.slice);const charCodeAt=Function.prototype.call.bind(String.prototype.charCodeAt);const clip=(text,max)=>{const last=charCodeAt(text,max-1);const next=charCodeAt(text,max);return slice(text,0,last>=0xd800&&last<=0xdbff&&next>=0xdc00&&next<=0xdfff?max-1:max);};const replace=Function.prototype.call.bind(String.prototype.replace);const integer=Number.isInteger;const seen=new Set();const has=seen.has.bind(seen);const add=seen.add.bind(seen);let count=0;const report=(event,rejection)=>{try{if(count>=3)return;if(!rejection&&typeof event.message!=="string"&&!event.error)return;const reason=rejection?event.reason:undefined;const message=clip(stringify(rejection?(reason?.message??reason):(event.error?.message??event.message)),500);if(has(message))return;const data={type:"openclaw:widget-runtime-error",message};if(typeof event.filename==="string"){const source=clip(replace(replace(event.filename,/[?#].*$/,""),/^.*[\\/]/,""),200);if(source)data.source=source;}if(integer(event.lineno))data.line=event.lineno;if(integer(event.colno))data.column=event.colno;add(message);count++;post(data,"*");}catch{}};listen("error",event=>report(event,false),true);listen("unhandledrejection",event=>report(event,true),true);})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const root=document.documentElement;const set=root.style.setProperty.bind(root.style);const rm=root.style.removeProperty.bind(root.style);const keys=["surface","card","elevated","text","text-strong","muted","border","border-strong","accent","accent-fill","accent-fg","ok","warn","danger","info","radius","radius-full","scrollbar-size","scrollbar-thumb-inset","scrollbar-thumb","scrollbar-thumb-hover","font-body","font-mono"];addEventListener("message",event=>{if(event.source!==window.parent)return;const data=event.data;if(!data||data.type!=="openclaw:widget-theme"||typeof data.tokens!=="object"||data.tokens===null)return;for(const key of keys){const raw=data.tokens[key];const value=typeof raw==="string"?raw.trim():"";if(value&&value.length<=256)set("--"+key,value);else rm("--"+key);}if(data.mode==="light"||data.mode==="dark")set("color-scheme",data.mode);});})();</script><script>(()=>{if(!window.parent||window.parent===window)return;addEventListener("message",event=>{if(event.source===window.parent&&event.data?.type==="openclaw:widget-chat-host")document.documentElement.classList.add("openclaw-chat-host");});})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const parent=window.parent;const post=(message,origin)=>parent.postMessage(message,origin);const listen=window.addEventListener.bind(window);const clone=Node.prototype.cloneNode;const query=Element.prototype.querySelectorAll;const queryDocument=document.querySelectorAll.bind(document);const item=NodeList.prototype.item;const remove=Node.prototype.removeChild;const replace=Node.prototype.replaceChild;const getParent=Object.getOwnPropertyDescriptor(Node.prototype,"parentNode")?.get;const names=Element.prototype.getAttributeNames;const getAttr=Element.prototype.getAttribute;const setAttr=Element.prototype.setAttribute;const serializer=new XMLSerializer();const serialize=serializer.serializeToString.bind(serializer);const create=document.createElement.bind(document);const styles=getComputedStyle.bind(window);const getProperty=CSSStyleDeclaration.prototype.getPropertyValue;const getContext=HTMLCanvasElement.prototype.getContext;const toDataURL=HTMLCanvasElement.prototype.toDataURL;const setWidth=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,"width")?.set;const setHeight=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,"height")?.set;const setFill=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,"fillStyle")?.set;const fill=CanvasRenderingContext2D.prototype.fillRect;const draw=CanvasRenderingContext2D.prototype.drawImage;const add=EventTarget.prototype.addEventListener;const ImageCtor=Image;const setSrc=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src")?.set;const encode=encodeURIComponent;const P=Promise;const ErrorCtor=Error;const stringify=String;const max=Math.max.bind(Math);const min=Math.min.bind(Math);const ceil=Math.ceil.bind(Math);listen("message",event=>{if(event.source!==parent)return;const data=event.data;if(!data||data.type!=="openclaw:widget-snapshot-request"||typeof data.id!=="string")return;void (async()=>{try{const body=document.body;const width=max(1,body.scrollWidth);const height=max(1,body.scrollHeight);const root=clone.call(document.documentElement,true);const scripts=query.call(root,"script");for(let index=scripts.length-1;index>=0;index--){const script=item.call(scripts,index);if(script&&getParent){const owner=getParent.call(script);if(owner)remove.call(owner,script);}}const liveCanvases=queryDocument("canvas");const clonedCanvases=query.call(root,"canvas");for(let index=0;index<liveCanvases.length;index++){const live=item.call(liveCanvases,index);const cloned=item.call(clonedCanvases,index);if(!live||!cloned||!getParent||!setSrc)continue;const image=create("img");for(const name of names.call(cloned)){const value=getAttr.call(cloned,name);if(value!==null)setAttr.call(image,name,value);}setSrc.call(image,toDataURL.call(live,"image/png"));const owner=getParent.call(cloned);if(owner)replace.call(owner,image,cloned);}const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><foreignObject width="100%" height="100%">'+serialize(root)+"</foreignObject></svg>";const url="data:image/svg+xml;charset=utf-8,"+encode(svg);const image=new ImageCtor();await new P((resolve,reject)=>{add.call(image,"load",resolve,{once:true});add.call(image,"error",()=>reject(new ErrorCtor("widget snapshot image failed to load")),{once:true});if(!setSrc)throw new ErrorCtor("widget snapshot image source unavailable");setSrc.call(image,url);});const canvas=create("canvas");const scale=min(window.devicePixelRatio||1,2);if(!setWidth||!setHeight)throw new ErrorCtor("widget snapshot canvas dimensions unavailable");const canvasWidth=ceil(width*scale);const canvasHeight=ceil(height*scale);if(canvasWidth>16384||canvasHeight>16384||canvasWidth*canvasHeight>16777216)throw new ErrorCtor("widget snapshot dimensions exceed limit");setWidth.call(canvas,canvasWidth);setHeight.call(canvas,canvasHeight);const context=getContext.call(canvas,"2d");if(!context||!setFill)throw new ErrorCtor("widget snapshot canvas unavailable");setFill.call(context,getProperty.call(styles(document.documentElement),"--surface"));fill.call(context,0,0,canvasWidth,canvasHeight);draw.call(context,image,0,0,canvasWidth,canvasHeight);post({type:"openclaw:widget-snapshot",id:data.id,dataUrl:toDataURL.call(canvas,"image/png"),width,height},"*");}catch(error){post({type:"openclaw:widget-snapshot",id:data.id,error:stringify(error)},"*");}})();});})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const parent=window.parent;const post=parent.postMessage.bind(parent);const listen=window.addEventListener.bind(window);let last=0;const report=()=>{const b=document.body;if(!b)return;const h=Math.ceil(Math.max(b.scrollHeight,b.offsetHeight,b.getBoundingClientRect().height));if(h&&h!==last){last=h;post({type:"openclaw:widget-size",height:h},"*");}};listen('load',report);new ResizeObserver(report).observe(document.body);setTimeout(report,50);setTimeout(report,500);})();</script><!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.bunny.net; script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.bunny.net; font-src data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.bunny.net; img-src data:; media-src data: https: blob:; connect-src https://wxyg.tail2f3e0d.ts.net:18575;"><title>系统监控</title><style>:root{color-scheme:light dark;
+--surface:#faf9f7;--card:#ffffff;--elevated:#ffffff;
+--text:#403c35;--text-strong:#211e1a;--muted:#6e6960;
+--border:#e8e4dc;--border-strong:#d6d0c5;
+--accent:#bd4531;--accent-fill:#bd4531;--accent-fg:#ffffff;
+--ok:#15803d;--warn:#b45309;--danger:#dc2626;--info:#2563eb;
+--radius:10px;
+--radius-full:9999px;--scrollbar-size:12px;--scrollbar-thumb-inset:3px;
+--scrollbar-thumb:color-mix(in srgb,var(--muted) 32%,transparent);
+--scrollbar-thumb-hover:color-mix(in srgb,var(--muted) 64%,transparent);
+--font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+--font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--accent-subtle:color-mix(in srgb,var(--accent) 10%,transparent);
+--ok-subtle:color-mix(in srgb,var(--ok) 10%,transparent);
+--warn-subtle:color-mix(in srgb,var(--warn) 12%,transparent);
+--danger-subtle:color-mix(in srgb,var(--danger) 10%,transparent);
+--info-subtle:color-mix(in srgb,var(--info) 10%,transparent)}
+@media (prefers-color-scheme:dark){:root{
+--surface:#0e1015;--card:#161920;--elevated:#191c24;
+--text:#d4d4d8;--text-strong:#f4f4f5;--muted:#8b8b94;
+--border:#1e2028;--border-strong:#2e3040;
+--accent:#ff5c5c;--accent-fill:#d13c3c;--accent-fg:#ffffff;
+--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--info:#3b82f6}}
+*{box-sizing:border-box}@supports not selector(::-webkit-scrollbar-thumb){*{scrollbar-color:var(--scrollbar-thumb) transparent;scrollbar-width:thin}}html,body{margin:0}::-webkit-scrollbar{width:var(--scrollbar-size);height:var(--scrollbar-size);background:var(--surface)}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}::-webkit-scrollbar-button{display:none}::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);background-clip:content-box;border:var(--scrollbar-thumb-inset) solid transparent;border-radius:var(--radius-full)}::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover);background-clip:content-box}.openclaw-chat-host,.openclaw-chat-host body{scrollbar-width:none}.openclaw-chat-host::-webkit-scrollbar,.openclaw-chat-host body::-webkit-scrollbar{display:none}
+body{font:14px/1.5 var(--font-body);color:var(--text)}
+h1,h2,h3{margin:0 0 8px;color:var(--text-strong);font-weight:600}
+h1{font-size:18px}h2{font-size:16px}h3{font-size:14px}
+p{margin:0 0 8px}
+a{color:var(--accent)}
+button{font:13px var(--font-body);color:var(--text);background:var(--card);border:1px solid var(--border-strong);border-radius:var(--radius);padding:6px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent-fill);color:var(--accent-fg);border-color:transparent}
+input,select,textarea{font:13px var(--font-body);color:var(--text);background:var(--elevated);border:1px solid var(--border-strong);border-radius:var(--radius);padding:6px 10px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:12px;padding:4px 8px}
+td{padding:6px 8px;border-top:1px solid var(--border)}
+code,pre{font-family:var(--font-mono);font-size:12px;background:var(--card);border-radius:4px}
+code{padding:1px 5px}pre{padding:10px;overflow-x:auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.badge{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--accent-subtle);color:var(--accent)}
+.badge.ok{background:var(--ok-subtle);color:var(--ok)}
+.badge.warn{background:var(--warn-subtle);color:var(--warn)}
+.badge.danger{background:var(--danger-subtle);color:var(--danger)}
+.badge.info{background:var(--info-subtle);color:var(--info)}
+.metric{font-size:24px;font-weight:600;color:var(--text-strong)}
+.muted{color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.svg-widget{display:grid;place-items:center}.svg-widget>svg{max-width:100%}</style></head><body><script>(()=>{if(!window.parent||window.parent===window||Object.prototype.hasOwnProperty.call(window,"openclaw"))return;const parent=window.parent;const post=parent.postMessage.bind(parent);const P=Promise;const then=P.prototype.then;const ErrorCtor=Error;const stringify=String;const freeze=Object.freeze;const define=Object.defineProperty;const push=Array.prototype.push;const shift=Array.prototype.shift;const listen=window.addEventListener.bind(window);const path=Event.prototype.composedPath;const prevent=Event.prototype.preventDefault;const test=RegExp.prototype.test;const later=setTimeout.bind(window);const cancel=clearTimeout.bind(window);const c=new MessageChannel();const promptPost=c.port1.postMessage.bind(c.port1);const b=new MessageChannel();const bridgePost=b.port1.postMessage.bind(b.port1);const promptWaiting=[];let inlinePromptReady=false;c.port1.addEventListener("message",event=>{if(event.data?.type!=="openclaw:widget-prompt-host-ready"||inlinePromptReady)return;inlinePromptReady=true;while(promptWaiting.length){const entry=shift.call(promptWaiting);if(entry)entry.inline();}});c.port1.start();let act=null;try{const ua=navigator.userActivation;const d=ua&&Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ua),"isActive");if(d&&d.get)act=d.get.bind(ua);}catch{}post({type:"openclaw:widget-prompt-offer"},"*",[c.port2]);post({type:"openclaw:widget-bridge-port-offer"},"*",[b.port2]);let ticket=null;let controlUiBaseUrl=null;let sequence=0;let hostInitExpired=false;const pending=new Map();const waiting=[];const initTimer=later(()=>{hostInitExpired=true;while(waiting.length){const entry=shift.call(waiting);if(entry)entry.reject(new ErrorCtor("widget host capabilities unavailable"));}while(promptWaiting.length){const entry=shift.call(promptWaiting);if(entry)entry.reject(new ErrorCtor("widget prompt host unavailable"));}},5000);b.port1.addEventListener("message",event=>{const data=event.data;if(data?.type==="openclaw:widget-host-init"&&typeof data.ticket==="string"){ticket=data.ticket;const base=data.controlUiBaseUrl;controlUiBaseUrl=typeof base==="string"&&/^https?:\/\//.test(base)?base:null;bridgePost({type:"openclaw:widget-host-init-ack",ticket});cancel(initTimer);while(waiting.length){const entry=shift.call(waiting);if(entry)entry.send();}while(promptWaiting.length){const entry=shift.call(promptWaiting);if(entry)entry.send();}return;}if(data?.type!=="openclaw:widget-bridge-response"||typeof data.id!=="string")return;const entry=pending.get(data.id);if(!entry)return;pending.delete(data.id);if(data.ok===true)entry.resolve(data.result);else entry.reject(new ErrorCtor(typeof data.error==="string"?data.error:"widget host request failed"));});b.port1.start();const request=(method,params)=>new P((resolve,reject)=>{const send=()=>{const id="widget-"+(++sequence);pending.set(id,{resolve,reject});try{bridgePost({type:"openclaw:widget-bridge-request",id,method,params,ticket});}catch(error){pending.delete(id);reject(error);}};if(ticket)send();else if(hostInitExpired)reject(new ErrorCtor("widget host capabilities unavailable"));else push.call(waiting,{send,reject});});const activate=event=>{if(event.isTrusted!==true||!ticket||event.defaultPrevented||event.shiftKey||event.altKey)return;const auxiliary=event.type==="auxclick"&&event.button===1;if(!auxiliary&&!(event.type==="click"&&event.button===0))return;for(let index=0,entries=path.call(event);index<entries.length;index++){const anchor=entries[index];if(anchor?.tagName!=="A")continue;const url=anchor.href;if(!url)continue;if(!auxiliary&&anchor.target!=="_blank")return;if(!test.call(/^https?:\/\//i,url))return;prevent.call(event);then.call(request("host.open",{url}),()=>{},()=>{});return;}};listen("click",activate);listen("auxclick",activate);const sendPrompt=text=>{if(!act||act()!==true)return P.resolve(false);const value=stringify(text);if(ticket)return request("prompt.send",{text:value});return new P((resolve,reject)=>{const send=()=>{const result=request("prompt.send",{text:value});then.call(result,resolve,reject);};const inline=()=>{promptPost({type:"openclaw:widget-prompt",prompt:value});resolve(true);};if(inlinePromptReady)inline();else if(hostInitExpired)reject(new ErrorCtor("widget prompt host unavailable"));else push.call(promptWaiting,{send,inline,reject});});};const host={};define(host,"controlUiBaseUrl",{enumerable:true,get:()=>controlUiBaseUrl});freeze(host);const api=freeze({host,prompt:freeze({send:sendPrompt}),state:freeze({emit:payload=>request("state.emit",{payload})}),data:freeze({read:(bindingId,params)=>request("data.read",{bindingId:stringify(bindingId),params})}),action:freeze({run:(action,params)=>request("action.run",{action:stringify(action),params:params===undefined?{}:params})}),cron:freeze({trigger:jobId=>request("cron.trigger",{jobId:stringify(jobId)})})});define(window,"openclaw",{value:api,writable:false,configurable:false});window.sendPrompt=text=>{void sendPrompt(text);};define(window,"sendPrompt",{value:window.sendPrompt,writable:false,configurable:false});post({type:"openclaw:widget-bridge-ready"},"*");})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const post=window.parent.postMessage.bind(window.parent);const listen=window.addEventListener.bind(window);const stringify=String;const slice=Function.prototype.call.bind(String.prototype.slice);const charCodeAt=Function.prototype.call.bind(String.prototype.charCodeAt);const clip=(text,max)=>{const last=charCodeAt(text,max-1);const next=charCodeAt(text,max);return slice(text,0,last>=0xd800&&last<=0xdbff&&next>=0xdc00&&next<=0xdfff?max-1:max);};const replace=Function.prototype.call.bind(String.prototype.replace);const integer=Number.isInteger;const seen=new Set();const has=seen.has.bind(seen);const add=seen.add.bind(seen);let count=0;const report=(event,rejection)=>{try{if(count>=3)return;if(!rejection&&typeof event.message!=="string"&&!event.error)return;const reason=rejection?event.reason:undefined;const message=clip(stringify(rejection?(reason?.message??reason):(event.error?.message??event.message)),500);if(has(message))return;const data={type:"openclaw:widget-runtime-error",message};if(typeof event.filename==="string"){const source=clip(replace(replace(event.filename,/[?#].*$/,""),/^.*[\\/]/,""),200);if(source)data.source=source;}if(integer(event.lineno))data.line=event.lineno;if(integer(event.colno))data.column=event.colno;add(message);count++;post(data,"*");}catch{}};listen("error",event=>report(event,false),true);listen("unhandledrejection",event=>report(event,true),true);})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const root=document.documentElement;const set=root.style.setProperty.bind(root.style);const rm=root.style.removeProperty.bind(root.style);const keys=["surface","card","elevated","text","text-strong","muted","border","border-strong","accent","accent-fill","accent-fg","ok","warn","danger","info","radius","radius-full","scrollbar-size","scrollbar-thumb-inset","scrollbar-thumb","scrollbar-thumb-hover","font-body","font-mono"];addEventListener("message",event=>{if(event.source!==window.parent)return;const data=event.data;if(!data||data.type!=="openclaw:widget-theme"||typeof data.tokens!=="object"||data.tokens===null)return;for(const key of keys){const raw=data.tokens[key];const value=typeof raw==="string"?raw.trim():"";if(value&&value.length<=256)set("--"+key,value);else rm("--"+key);}if(data.mode==="light"||data.mode==="dark")set("color-scheme",data.mode);});})();</script><script>(()=>{if(!window.parent||window.parent===window)return;addEventListener("message",event=>{if(event.source===window.parent&&event.data?.type==="openclaw:widget-chat-host")document.documentElement.classList.add("openclaw-chat-host");});})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const parent=window.parent;const post=(message,origin)=>parent.postMessage(message,origin);const listen=window.addEventListener.bind(window);const clone=Node.prototype.cloneNode;const query=Element.prototype.querySelectorAll;const queryDocument=document.querySelectorAll.bind(document);const item=NodeList.prototype.item;const remove=Node.prototype.removeChild;const replace=Node.prototype.replaceChild;const getParent=Object.getOwnPropertyDescriptor(Node.prototype,"parentNode")?.get;const names=Element.prototype.getAttributeNames;const getAttr=Element.prototype.getAttribute;const setAttr=Element.prototype.setAttribute;const serializer=new XMLSerializer();const serialize=serializer.serializeToString.bind(serializer);const create=document.createElement.bind(document);const styles=getComputedStyle.bind(window);const getProperty=CSSStyleDeclaration.prototype.getPropertyValue;const getContext=HTMLCanvasElement.prototype.getContext;const toDataURL=HTMLCanvasElement.prototype.toDataURL;const setWidth=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,"width")?.set;const setHeight=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,"height")?.set;const setFill=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,"fillStyle")?.set;const fill=CanvasRenderingContext2D.prototype.fillRect;const draw=CanvasRenderingContext2D.prototype.drawImage;const add=EventTarget.prototype.addEventListener;const ImageCtor=Image;const setSrc=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src")?.set;const encode=encodeURIComponent;const P=Promise;const ErrorCtor=Error;const stringify=String;const max=Math.max.bind(Math);const min=Math.min.bind(Math);const ceil=Math.ceil.bind(Math);listen("message",event=>{if(event.source!==parent)return;const data=event.data;if(!data||data.type!=="openclaw:widget-snapshot-request"||typeof data.id!=="string")return;void (async()=>{try{const body=document.body;const width=max(1,body.scrollWidth);const height=max(1,body.scrollHeight);const root=clone.call(document.documentElement,true);const scripts=query.call(root,"script");for(let index=scripts.length-1;index>=0;index--){const script=item.call(scripts,index);if(script&&getParent){const owner=getParent.call(script);if(owner)remove.call(owner,script);}}const liveCanvases=queryDocument("canvas");const clonedCanvases=query.call(root,"canvas");for(let index=0;index<liveCanvases.length;index++){const live=item.call(liveCanvases,index);const cloned=item.call(clonedCanvases,index);if(!live||!cloned||!getParent||!setSrc)continue;const image=create("img");for(const name of names.call(cloned)){const value=getAttr.call(cloned,name);if(value!==null)setAttr.call(image,name,value);}setSrc.call(image,toDataURL.call(live,"image/png"));const owner=getParent.call(cloned);if(owner)replace.call(owner,image,cloned);}const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><foreignObject width="100%" height="100%">'+serialize(root)+"</foreignObject></svg>";const url="data:image/svg+xml;charset=utf-8,"+encode(svg);const image=new ImageCtor();await new P((resolve,reject)=>{add.call(image,"load",resolve,{once:true});add.call(image,"error",()=>reject(new ErrorCtor("widget snapshot image failed to load")),{once:true});if(!setSrc)throw new ErrorCtor("widget snapshot image source unavailable");setSrc.call(image,url);});const canvas=create("canvas");const scale=min(window.devicePixelRatio||1,2);if(!setWidth||!setHeight)throw new ErrorCtor("widget snapshot canvas dimensions unavailable");const canvasWidth=ceil(width*scale);const canvasHeight=ceil(height*scale);if(canvasWidth>16384||canvasHeight>16384||canvasWidth*canvasHeight>16777216)throw new ErrorCtor("widget snapshot dimensions exceed limit");setWidth.call(canvas,canvasWidth);setHeight.call(canvas,canvasHeight);const context=getContext.call(canvas,"2d");if(!context||!setFill)throw new ErrorCtor("widget snapshot canvas unavailable");setFill.call(context,getProperty.call(styles(document.documentElement),"--surface"));fill.call(context,0,0,canvasWidth,canvasHeight);draw.call(context,image,0,0,canvasWidth,canvasHeight);post({type:"openclaw:widget-snapshot",id:data.id,dataUrl:toDataURL.call(canvas,"image/png"),width,height},"*");}catch(error){post({type:"openclaw:widget-snapshot",id:data.id,error:stringify(error)},"*");}})();});})();</script><script>(()=>{if(!window.parent||window.parent===window)return;const parent=window.parent;const post=parent.postMessage.bind(parent);const listen=window.addEventListener.bind(window);let last=0;const report=()=>{const b=document.body;if(!b)return;const h=Math.ceil(Math.max(b.scrollHeight,b.offsetHeight,b.getBoundingClientRect().height));if(h&&h!==last){last=h;post({type:"openclaw:widget-size",height:h},"*");}};listen('load',report);new ResizeObserver(report).observe(document.body);setTimeout(report,50);setTimeout(report,500);})();</script><div id="oa-sys" class="oa-sys">
+<style>
+#oa-sys{position:relative;display:flex;flex-direction:column;align-items:stretch;width:100%;box-sizing:border-box;gap:10px;padding:10px 8px;font-family:var(--font-body,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif);font-size:12px;line-height:1.45;color:var(--text)}
+#oa-sys .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#oa-sys .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--muted) 18%,transparent)}
+#oa-sys .dot.ok{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 18%,transparent)}
+#oa-sys .dot.danger{background:var(--danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 18%,transparent)}
+#oa-sys .ttl{font-weight:600;letter-spacing:.02em}
+#oa-sys .sp1{flex:1}
+#oa-sys .upd{color:var(--muted);font-size:11px;font-family:var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace)}
+#oa-sys .grid{display:grid;gap:10px;grid-template-columns:1fr}
+#oa-sys .t{position:relative;display:flex;flex-direction:column;gap:3px;padding:9px 8px 0;border:1px solid var(--border);border-radius:13px;background:var(--card);min-width:0;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+#oa-sys .t:hover,#oa-sys .m:hover{border-color:var(--border-strong);box-shadow:0 4px 16px rgba(0,0,0,.18)}
+#oa-sys .l{color:var(--muted);font-size:10.5px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#oa-sys .v{font-family:var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace);font-size:20px;font-weight:600;line-height:1.1;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#oa-sys .s{color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#oa-sys .chart{position:relative;height:38px;margin:7px -12px 0}
+#oa-sys .chart svg{display:block;width:100%;height:100%}
+#oa-sys .chart .dot-end,#oa-sys .cchart .dot-end{position:absolute;right:auto;left:calc(100% - 3px);width:5px;height:5px;border-radius:50%;background:#2f9e8f;box-shadow:0 0 6px color-mix(in srgb,#2f9e8f 55%,transparent);transform:translate(-50%,-50%);pointer-events:none}
+#oa-sys .chart .hairline,#oa-sys .cchart .hairline{position:absolute;top:0;bottom:0;width:1px;background:color-mix(in srgb,#2f9e8f 40%,transparent);pointer-events:none;display:none}
+#oa-sys .chart .hover-label,#oa-sys .cchart .hover-label{position:absolute;right:2px;top:0;padding:0 4px;font-size:10px;font-family:var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace);color:var(--text);background:var(--elevated,var(--card));border:1px solid var(--border);border-radius:5px;white-space:nowrap;pointer-events:none;display:none}
+#oa-sys .corebox{display:grid;grid-template-columns:repeat(__GRID_COLS__,minmax(0,1fr));gap:1px;margin:11px -6px 0}
+#oa-sys .corebox .crow{display:flex;justify-content:space-between;align-items:baseline;gap:4px;padding:0;font-size:9.5px;line-height:1.25;white-space:nowrap}
+#oa-sys .corebox .crow .cl{color:var(--muted)}
+#oa-sys .corebox .crow b{font-family:var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace);font-weight:600}
+#oa-sys .corebox .core{display:flex;flex-direction:column;gap:2px;min-width:0;padding:4px 5px 3px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+#oa-sys .corebox .cchart{position:relative;height:12px;margin:0;width:100%}
+#oa-sys .corebox .core:last-child .cchart{border-radius:0}
+#oa-sys .corebox .cchart svg{display:block;width:100%;height:100%}
+#oa-sys .m{position:relative;display:flex;flex-direction:column;gap:2px;padding:9px 11px;border:1px solid var(--border);border-radius:11px;min-width:0;transition:border-color .15s,box-shadow .15s}
+#oa-sys .m .v{font-size:16px}
+#oa-sys .tip{position:absolute;z-index:9;display:none;max-width:min(250px,calc(100% - 8px));box-sizing:border-box;padding:9px 11px;border:1px solid var(--border-strong);border-radius:10px;background:var(--elevated,var(--card));box-shadow:0 8px 24px rgba(0,0,0,.28);font-size:11px;line-height:1.55}
+#oa-sys .tip b{display:block;margin-bottom:3px}
+#oa-sys .tip .r{display:flex;justify-content:space-between;gap:14px}
+#oa-sys .tip .r span:first-child{color:var(--muted)}
+#oa-sys .sec{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+#oa-sys .sec:after{content:"";flex:1;height:1px;background:var(--border)}
+</style>
+<div class="hd"><span class="dot" id="gwdot"></span><span class="ttl">系统状态</span><span class="badge" id="gwbadge">读取中…</span><span class="sp1"></span><span class="upd" id="upd">—</span></div>
+<div class="grid" id="gmain">
+  <div class="t" data-tip="cpu"><span class="l">CPU 宿主 · 实时</span><span class="v" id="vcpu">—</span><span class="s" id="scpu">—</span><div class="chart" id="ccpu"></div></div>
+  <div class="t" data-tip="cores"><span class="l">CPU 各核 · 实时</span><div class="corebox" id="corebox"></div></div>
+  <div class="t" data-tip="mem"><span class="l">内存 宿主 · 实时</span><span class="v" id="vmem">—</span><span class="s" id="smem">—</span><div class="chart" id="cmem"></div></div>
+  <div class="t" data-tip="net"><span class="l">网络吞吐 · 实时</span><span class="v" id="vnet">—</span><span class="s" id="snet">—</span><div class="chart" id="cnet"></div></div>
+  <div class="t" data-tip="disk"><span class="l">磁盘 / · 实时</span><span class="v" id="vdisk">—</span><span class="s" id="sdisk">—</span><div class="chart" id="cdisk"></div></div>
+  <div class="t" data-tip="p99"><span class="l">延迟 P99 · 实时</span><span class="v" id="vp99">—</span><span class="s" id="sp99">—</span><div class="chart" id="cp99"></div></div>
+</div>
+<div class="sec">实时活动</div>
+<div class="grid" id="gact">
+  <div class="m" data-tip="sess"><span class="l">会话</span><span class="v" id="vsess">—</span></div>
+  <div class="m" data-tip="cron"><span class="l">自动化</span><span class="v" id="vcron">—</span></div>
+  <div class="m" data-tip="agent"><span class="l">智能体</span><span class="v" id="vagent">—</span></div>
+  <div class="m" data-tip="chan"><span class="l">通道</span><span class="v" id="vchan">—</span></div>
+</div>
+<div class="tip" id="tip"></div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById("oa-sys"); if(!root) return;
+  var TEAL="#2f9e8f", WHITE="#ffffff", MB=1048576, HOST="__METRICS_URL__", CAP=80;
+  var MODE={ccpu:"pct",cmem:"pct",cdisk:"pct",cnet:"abs",cp99:"abs"};
+  var ABS={cnet:{warn:5*MB, red:15*MB, unit:"MB/s"}, cp99:{warn:200, red:700, unit:"ms"}};
+  function cssv(n,fb){ try{ var v=getComputedStyle(document.documentElement).getPropertyValue(n); v=(v||"").trim(); return v||fb; }catch(e){ return fb; } }
+  var DANGER=hex(cssv("--danger","#f87171"));
+  function hex(c){ c=(c||"").trim(); if(c.charAt(0)==="#"){ if(c.length===4) return "#"+c[1]+c[1]+c[2]+c[2]+c[3]+c[3]; return c.slice(0,7); } return "#f87171"; }
+  function rgb(c){ c=hex(c); return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]; }
+  function mix(a,b,t){ var A=rgb(a),B=rgb(b); t=Math.max(0,Math.min(1,t)); return "rgb("+Math.round(A[0]+(B[0]-A[0])*t)+","+Math.round(A[1]+(B[1]-A[1])*t)+","+Math.round(A[2]+(B[2]-A[2])*t)+")"; }
+  function hexToHsl(c){ c=hex(c); var r=parseInt(c.slice(1,3),16)/255,g=parseInt(c.slice(3,5),16)/255,b=parseInt(c.slice(5,7),16)/255; var mx=Math.max(r,g,b),mn=Math.min(r,g,b),h=0,s=0,l=(mx+mn)/2,d=mx-mn; if(d>0){ s=l>0.5?d/(2-mx-mn):d/(mx+mn); if(mx===r) h=(g-b)/d+(g<b?6:0); else if(mx===g) h=(b-r)/d+2; else h=(r-g)/d+4; h*=60; } return [h,s,l]; }
+  function hslCss(a){ return "hsl("+a[0].toFixed(1)+","+(a[1]*100).toFixed(1)+"%,"+(a[2]*100).toFixed(1)+"%)"; }
+  function colorAt(v,warn,red,pct){ var A=hexToHsl(TEAL), B=hexToHsl(DANGER); if(v<=warn) return hslCss(A); if(v>=red) return hslCss(B); var t=(v-warn)/(red-warn), h=A[0]+(B[0]-A[0])*t; if(pct){ var AN=[0,0.2,0.4,0.6,0.8,1], AH=[A[0],120,86,57,17,B[0]]; for(var i=1;i<AN.length;i++){ if(t<=AN[i]){ h=AH[i-1]+(AH[i]-AH[i-1])*((t-AN[i-1])/(AN[i]-AN[i-1])); break; } } } return hslCss([h, A[1]+(B[1]-A[1])*t, A[2]+(B[2]-A[2])*t]); }
+  function scaleOf(id){ if(MODE[id]==="pct") return {warn:45, red:100}; return ABS[id]||{warn:45,red:100}; }
+  var hist={cpu:[],mem:[],disk:[],net:[],p99:[]};
+  var coreHist=[];
+  var st={busy:null,load:"",cores:2,cpu:null,perCore:[],mem:null,swap:null,disk:null,diskAvail:null,rx:null,tx:null,hostOk:null};
+  var maxP99=0;
+  var tips={
+    cpu:{t:"CPU 宿主",r:[["值","整机 CPU 使用率"],["来源","/proc/stat（3s）"],["比例尺","固定 0-100%"],["配色","预警阈值下青绿，越限经黄橙渐变到红"]]},
+    cores:{t:"CPU 各核",r:[["值","每核使用率与曲线"],["来源","/proc/stat 每核（3s）"],["比例尺","固定 0-100%"],["配色","预警阈值下青绿，越限经黄橙渐变到红"]]},
+    mem:{t:"内存（宿主）",r:[["已用 / 总计","/proc/meminfo"],["Swap","实时"],["比例尺","固定 0-100%"],["配色","预警阈值下青绿，越限经黄橙渐变到红"]]},
+    net:{t:"网络吞吐",r:[["合计","rx + tx 每秒速率"],["来源","/proc/net/dev（不含 lo）"],["比例尺","窗口自适应（仅几何）"],["配色","预警阈值下青绿，越限经黄橙渐变到红"]]},
+    disk:{t:"磁盘 /",r:[["已用 / 总计","statfs"],["可用","实时"],["比例尺","固定 0-100%"],["配色","预警阈值下青绿，越限经黄橙渐变到红"]]},
+    p99:{t:"事件循环延迟",r:[["当前 P99","health.eventLoop"],["观测最大","滚动窗口"],["比例尺","窗口自适应（仅几何）"],["配色","预警阈值下青绿，越限经黄橙渐变到红"]]},
+    sess:{t:"会话",r:[["来源","sessions.list"],["节奏","3s"]]},
+    cron:{t:"自动化任务",r:[["来源","cron.list"],["节奏","3s"]]},
+    agent:{t:"智能体",r:[["来源","agents.list"],["节奏","3s"]]},
+    chan:{t:"通道",r:[["含义","已连接 / 总数"],["来源","health.channels"],["节奏","3s"]]}
+  };
+  function set(id,v){var e=document.getElementById(id); if(e&&v!=null) e.textContent=String(v);}
+  function hhmm(){var d=new Date(),p=function(n){return String(n).padStart(2,"0");};return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());}
+  function arr(x,k){ if(Array.isArray(x)) return x; if(x&&typeof x==="object"){for(var i=0;i<k.length;i++) if(Array.isArray(x[k[i]])) return x[k[i]];} return null; }
+  function gb(b){return (b/1073741824).toFixed(1)+" GB";}
+  function rate(b){ if(b==null) return "—"; if(b<1024) return b+" B/s"; if(b<MB) return (b/1024).toFixed(1)+" KB/s"; return (b/MB).toFixed(2)+" MB/s"; }
+  function domain(vals,mode){
+    var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+    if(mode==="pct") return {lo:0,hi:100};
+    var span=mx-mn, minSpan=Math.max(1, mx*0.25);
+    if(span<minSpan){ var c=(mn+mx)/2; mn=c-minSpan/2; mx=c+minSpan/2; if(mn<0){mx-=mn;mn=0;} }
+    if(mx-mn<1e-6) mx=mn+1;
+    return {lo:mn,hi:mx};
+  }
+  function defs(id,lo,hi,ht){
+    var sc=scaleOf(id), warn=sc.warn, red=sc.red, pct=((MODE[id]||"pct")==="pct");
+    var f=function(v){ return Math.max(0,Math.min(1,(hi-v)/(hi-lo))); };
+    var vals=[lo];
+    var fr=pct?[0,0.2,0.4,0.6,0.8,1]:[0,0.2,0.4,0.6,0.8,1]; for(var i=0;i<fr.length;i++){ var vv=warn+(red-warn)*fr[i]; if(vv>lo&&vv<hi) vals.push(vv); }
+    vals.push(hi);
+    vals.sort(function(a,b){return a-b;});
+    var fs="", ls="";
+    for(var k=vals.length-1;k>=0;k--){ var v2=vals[k], off=f(v2), col=colorAt(v2,warn,red,pct);
+      fs+="<stop offset=\""+off.toFixed(4)+"\" style=\"stop-color:"+col+";stop-opacity:"+(0.45*((v2-lo)/(hi-lo))).toFixed(3)+"\"/>";
+      ls+="<stop offset=\""+off.toFixed(4)+"\" style=\"stop-color:"+col+";stop-opacity:1\"/>"; }
+    return "<linearGradient id=\"lg"+id+"\" gradientUnits=\"userSpaceOnUse\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\""+ht+"\">"+fs+"</linearGradient><linearGradient id=\"ls"+id+"\" gradientUnits=\"userSpaceOnUse\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\""+ht+"\">"+ls+"</linearGradient>";
+  }
+  function sparkSvg(id,vals,ht){
+    if(!vals||!vals.length) return "";
+    var mode=MODE[id]||"pct";
+    var w=100, d=domain(vals,mode), lo=d.lo, hi=d.hi;
+    var n=vals.length, pts=[];
+    for(var i=0;i<n;i++){ var x=n===1?XMAX:(i/(n-1))*XMAX, y=ht-1.5-((vals[i]-lo)/(hi-lo))*(ht-4); pts.push([x,y]); }
+    var line=pts.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");
+    var area=line+" L"+w+" "+pts[n-1][1].toFixed(1)+" L"+w+" "+ht+" L0 "+ht+" Z", lp=pts[pts.length-1];
+    var sc=scaleOf(id), gid="lg"+id;
+    return "<svg viewBox=\"0 0 "+w+" "+ht+"\" preserveAspectRatio=\"none\"><defs>"+defs(id,lo,hi,ht)+"</defs><path d=\""+area+"\" fill=\"url(#"+gid+")\"/><path d=\""+line+"\" fill=\"none\" stroke=\"url(#ls"+id+")\" stroke-width=\"1.6\" vector-effect=\"non-scaling-stroke\"/></svg>";
+  }
+  var XMAX=100;
+  var CFG={ccpu:{fmt:function(v){return Math.round(v)+"%";},swap:true},cmem:{fmt:function(v){return Math.round(v)+"%";},swap:true},cnet:{fmt:function(v){return rate(v);},swap:true},cdisk:{fmt:function(v){return Math.round(v)+"%";},swap:true},cp99:{fmt:function(v){return Math.round(v)+" ms";},swap:true}};
+  var CSTATE={};
+  function cfgFor(id){ if(CFG[id]) return CFG[id]; if(id.indexOf("cc")===0) return {fmt:function(v){return Math.round(v)+"%";},swap:true}; return {}; }
+  function readoutEl(el){ var c=el.closest(".core"); if(c) return c.querySelector("b"); var t=el.closest(".t"); return t?t.querySelector(".v"):null; }
+  function yFor(st,v){ var dm=domain(st.vals,st.mode); return st.h-1.5-((v-dm.lo)/(dm.hi-dm.lo))*(st.h-4); }
+  function nowDot(el){
+    var st=CSTATE[el.id]; if(!st) return;
+    var v=st.vals[st.vals.length-1];
+    var dot=el.querySelector(".dot-end"); if(dot){ dot.style.left=XMAX+"%"; dot.style.right="auto"; dot.style.top=(yFor(st,v)/st.h*100).toFixed(2)+"%"; }
+    var hair=el.querySelector(".hairline"); if(hair) hair.style.display="none";
+    var lab=el.querySelector(".hover-label"); if(lab) lab.style.display="none";
+    var ro=readoutEl(el); if(ro&&ro.__orig!==undefined){ ro.textContent=ro.__orig; ro.__orig=undefined; }
+  }
+  function ageText(sec){ if(sec<60) return "−"+sec+"秒"; var m=Math.floor(sec/60), s=sec%60; return "−"+m+"分钟"+(s?(" "+s+"秒"):""); }
+  function onHover(ev){
+    var el=ev.currentTarget; var st=CSTATE[el.id]; if(!st||st.vals.length<2) return;
+    var r=el.getBoundingClientRect(); if(!r.width) return;
+    var xp=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width));
+    var pos=Math.max(0,Math.min(xp*(100/XMAX)*(st.vals.length-1), st.vals.length-1)), i0=Math.floor(pos), i1=Math.min(i0+1,st.vals.length-1), f=pos-i0;
+    var vi=st.vals[i0]+(st.vals[i1]-st.vals[i0])*f;
+    var idx=Math.max(0,Math.min(Math.round(pos),st.vals.length-1));
+    var y=yFor(st,vi), pct=(pos/(st.vals.length-1))*XMAX;
+    var dot=el.querySelector(".dot-end"); if(dot){ dot.style.right="auto"; dot.style.left=pct+"%"; dot.style.top=(y/st.h*100).toFixed(2)+"%"; }
+    var hair=el.querySelector(".hairline"); if(hair){ hair.style.display="block"; hair.style.left=pct+"%"; }
+    var cfg=cfgFor(el.id), fmt=cfg.fmt||function(x){return String(Math.round(x));};
+    var age=Math.round((st.vals.length-1-idx)*3);
+    var lab=el.querySelector(".hover-label"), ro=readoutEl(el);
+    if(cfg.swap&&ro){ if(ro.__orig===undefined) ro.__orig=ro.textContent; ro.textContent=fmt(st.vals[idx])+(age>0?(" "+ageText(age)):""); if(lab) lab.style.display="none"; }
+    else if(lab){ lab.style.display="block"; lab.textContent=fmt(st.vals[idx]); }
+  }
+  function onLeave(ev){ nowDot(ev.currentTarget); }
+  function spark(el,vals,ht){
+    if(!el) return;
+    var h=ht||38;
+    el.innerHTML=sparkSvg(el.id,vals,h);
+    var dot=el.querySelector(".dot-end"); if(!dot){ dot=document.createElement("i"); dot.className="dot-end"; el.appendChild(dot); }
+    var hair=el.querySelector(".hairline"); if(!hair){ hair=document.createElement("i"); hair.className="hairline"; el.appendChild(hair); }
+    var lab=el.querySelector(".hover-label"); if(!lab){ lab=document.createElement("span"); lab.className="hover-label"; el.appendChild(lab); }
+    CSTATE[el.id]={vals:vals.slice(),h:h,mode:(MODE[el.id]||"pct")==="pct"?"pct":"auto"};
+    if(!el.__wired){ el.__wired=1; el.addEventListener("pointermove",onHover); el.addEventListener("pointerleave",onLeave); }
+    nowDot(el);
+  }
+  function push(a,v,cap){a.push(v); if(a.length>cap)a.shift();}
+  function renderCores(vals){
+    var el=document.getElementById("corebox"); if(!el) return;
+    if(!vals||!vals.length){ el.innerHTML=""; return; }
+    while(coreHist.length<vals.length) coreHist.push([]);
+    for(var i=0;i<vals.length;i++){ if(typeof vals[i]==="number") push(coreHist[i],vals[i],CAP); }
+    el.innerHTML=vals.map(function(v,i){
+      return "<div class=\"core\"><div class=\"crow\"><span class=\"cl\">核 "+i+"</span><b>"+(typeof v==="number"?v+"%":"—")+"</b></div><div class=\"cchart\" id=\"cc"+i+"\"></div></div>";
+    }).join("");
+    for(var j=0;j<vals.length;j++){ spark(document.getElementById("cc"+j), coreHist[j]||[], 12); }
+  }
+  var rd=(window.openclaw&&openclaw.data&&openclaw.data.read)?openclaw.data.read.bind(openclaw.data):null;
+  // Connection state. A gateway restart or a dropped link must never leave the
+  // card silent: the header keeps the last successful time and says it is
+  // reconnecting until reads succeed again.
+  var fails=0, lastOkAt=null;
+  // Two independent sources. The sysmetrics service on :18575 runs in its own
+  // process and survives a Gateway restart; the board embeds it in a hidden
+  // iframe so the hardware tiles keep updating while the Gateway is down. The
+  // Gateway RPC remains the fallback for the first paint.
+  // Fixed origin, same one HOST uses. Deriving it from location breaks inside
+  // the widget sandbox: the derived host is not this machine, so the embedded
+  // frame never loads and every cache call silently fails.
+  var DIRECT_BASE="__METRICS_ORIGIN__";
+  var hostAt=0, gwOk=null, directFrame=null, directSeen=false, directTriedAt=0;
+  function hostFresh(){ var t=(gapNow||3000)+6000; return hostAt>0 && (Date.now()-hostAt)<t; }
+  function badge(){
+    var dd=document.getElementById("gwdot");
+    if(dd) dd.className="dot "+(((gwOk===true)||hostFresh())?"ok":"danger");
+    if(gwOk===true){ set("gwbadge","正常"); return; }
+    if(gwOk===null){ set("gwbadge", hostFresh() ? "正常" : "读取中…"); return; }
+    if(gwOk===false && hostFresh()){ set("gwbadge","网关重启中 · 主机数据正常"); return; }
+    if(gwOk===false){ set("gwbadge","网关断开 · 重连中"); return; }
+    set("gwbadge","读取中…");
+  }
+  function beat(){
+    set("upd", lastFail ? ("读取失败 · 最后成功 "+(lastOkAt?hms(lastOkAt):"—")) : ("实时 · "+hhmm()));
+    badge();
+    // A frame that failed before the certificate was accepted stays failed.
+    // Rebuild it every 20s until it delivers.
+    if(!directSeen && directTriedAt && Date.now()-directTriedAt>20000){
+      try{ if(directFrame) directFrame.remove(); }catch(e){}
+      directFrame=null;
+      startDirect();
+    }
+  }
+  function hms(d){ var p=function(n){return String(n).padStart(2,"0");}; return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds()); }
+  function outageText(){
+    if(!lastOkAt) return "尚未取到数据";
+    var sec=Math.max(0,Math.round((Date.now()-lastOkAt.getTime())/1000));
+    var m=Math.floor(sec/60), s=sec%60;
+    return "最后成功 "+hms(lastOkAt)+" · 已失联 "+m+"分"+(s<10?"0":"")+s+"秒";
+  }
+  function render(){
+    set("upd", lastFail ? ("读取失败 · 最后成功 "+(lastOkAt?hms(lastOkAt):"—")) : ("实时 · "+hhmm()));
+    set("scpu",(st.load?st.load:"—")+" · "+st.cores+" vCPU"+(st.busy!=null?" · 网关 "+st.busy+"%":""));
+    set("smem", st.mem!=null?("已用 "+st.mem+"% · swap "+(st.swap||"—")):"—");
+    set("snet", st.rx!=null?("↓ "+rate(st.rx)+" · ↑ "+rate(st.tx)):"—");
+    set("sdisk", st.disk!=null?("已用 "+st.disk+"% · 可用 "+gb(st.diskAvail)):"—");
+    if(st.hostOk===false && gwOk!==false){ set("sdisk","指标端点未连通 · 检查 18575"); }
+  }
+  var lastFail=false;
+  // Shared business-metric cache on the metrics origin. Every board instance
+  // reads the same payload; only a stale slot triggers a real Gateway call and
+  // the result is written back once, so N boards no longer mean N Gateway calls.
+  var BIZ=DIRECT_BASE+"/biz.json", bizSeq=0, bizWait={};
+  // The widget frame cannot fetch the metrics origin itself (the host CSP only
+  // permits framing), so cache reads/writes are relayed through the embedded
+  // metrics page, which lives on that origin and answers over postMessage.
+  function bizPost(make){
+    return new Promise(function(resolve){
+      if(!directFrame){ resolve(null); return; }
+      var id=++bizSeq, done=false;
+      bizWait[id]=function(v){ if(done) return; done=true; resolve(v); };
+      try{ directFrame.contentWindow.postMessage(make(id), DIRECT_BASE); }
+      catch(e){ delete bizWait[id]; resolve(null); return; }
+      setTimeout(function(){ if(done) return; done=true; delete bizWait[id]; resolve(null); }, 1200);
+    });
+  }
+  // Direct fetch first: this frame is allowed to reach the metrics origin (the
+  // hardware poll already proves it). The embedded-frame relay stays as a
+  // fallback for hosts whose CSP blocks the direct call.
+  async function bizRead(){
+    try{
+      var ctl=(typeof AbortController!=="undefined")?new AbortController():null;
+      var to=ctl?setTimeout(function(){ try{ctl.abort();}catch(e){} },2500):0;
+      var r=await fetch(BIZ,{cache:"no-store",signal:ctl?ctl.signal:undefined});
+      if(to) clearTimeout(to);
+      if(r.ok) return await r.json();
+    }catch(e){}
+    return await bizPost(function(id){ return {type:"biz.get", id:id}; });
+  }
+  function bizWrite(key,at,v){
+    var p={}; p[key]={at:at,v:v};
+    try{ fetch(BIZ,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({data:p})}).catch(function(){}); }catch(e){}
+  }
+  // One snapshot per polling round: all four slots read the same GET instead of
+  // each issuing its own request (4x per round was the whole excess).
+  var bizSnap=null, bizSnapAt=0;
+  async function bizSnapshot(){
+    var now=Date.now();
+    if(bizSnap && now-bizSnapAt<3500) return bizSnap;
+    var b=await bizRead();
+    if(b){ bizSnap=b; bizSnapAt=Date.now(); }
+    return b;
+  }
+  async function bizSlot(key,ttl,fetchFn){
+    var b=await bizSnapshot(), s=b&&b.data?b.data[key]:null;
+    if(s&&typeof s.at==="number"&&Date.now()-s.at<ttl) return s.v;
+    // Small jitter + recheck collapses the case where several frames go stale
+    // in the same second; the second reader usually finds the first one's write.
+    await new Promise(function(r){ setTimeout(r,120+Math.random()*180); });
+    var b2=await bizSnapshot(), s2=b2&&b2.data?b2.data[key]:null;
+    if(s2&&typeof s2.at==="number"&&Date.now()-s2.at<ttl) return s2.v;
+    var v=await fetchFn();
+    var stamp=Date.now();
+    bizWrite(key,stamp,v);
+    // Fold the fresh value into the in-memory snapshot instead of discarding it:
+    // the remaining slots in this round then reuse it and skip their own GET.
+    if(bizSnap && bizSnap.data){ bizSnap.data[key]={at:stamp,v:v}; bizSnapAt=stamp; }
+    return v;
+  }
+  async function hostTick(){
+    try{ applyMetrics(await gatewayMetrics()); lastFail=false; }
+    catch(e){ lastFail=true; st.hostOk=false; }
+  }
+  async function gatewayMetrics(){
+    var res=await fetch(HOST,{cache:"no-store"}); if(!res.ok) throw new Error("http");
+    var d=await res.json();
+    return d;
+  }
+  function applyMetrics(d){
+    if(!d||!d.cpu||!d.mem) return;
+    hostAt=Date.now(); lastOkAt=new Date(); st.hostOk=true;
+    st.cores=d.cpu.cores;
+    if(typeof d.cpu.busyPct==="number"){ st.cpu=d.cpu.busyPct; push(hist.cpu,d.cpu.busyPct,CAP); set("vcpu",d.cpu.busyPct+"%"); spark(document.getElementById("ccpu"),hist.cpu); }
+    st.perCore=d.cpu.perCore||[]; renderCores(st.perCore);
+    if(d.cpu.load1!=null){ st.load=d.cpu.load1.toFixed(2)+" / "+d.cpu.load5.toFixed(2)+" / "+d.cpu.load15.toFixed(2); }
+    if(d.mem.usedPct!=null){ st.mem=d.mem.usedPct; push(hist.mem,d.mem.usedPct,CAP); set("vmem",gb(d.mem.usedBytes)+"/"+gb(d.mem.totalBytes)); spark(document.getElementById("cmem"),hist.mem); }
+    if(d.swap) st.swap=gb(d.swap.usedBytes);
+    if(d.net){ st.rx=d.net.rxBps; st.tx=d.net.txBps; var tot=(d.net.rxBps||0)+(d.net.txBps||0); push(hist.net,tot,CAP); set("vnet",rate(tot)); spark(document.getElementById("cnet"),hist.net); }
+    if(d.disk){ st.disk=d.disk.usedPct; st.diskAvail=d.disk.availableBytes; push(hist.disk,d.disk.usedPct,CAP); set("vdisk",gb(d.disk.totalBytes)); spark(document.getElementById("cdisk"),hist.disk); }
+  }
+  function startDirect(){
+    if(directFrame) return;
+    try{
+      var f=document.createElement("iframe");
+      f.setAttribute("aria-hidden","true");
+      f.tabIndex=-1;
+      f.title="host metrics";
+      f.style.cssText="position:absolute;width:0;height:0;border:0;opacity:0;pointer-events:none";
+      f.src=DIRECT_BASE+"/embed";
+      root.appendChild(f);
+      directFrame=f;
+      directTriedAt=Date.now();
+    }catch(e){ /* the Gateway fallback still works */ }
+  }
+  function onDirect(ev){
+    if(!directFrame || ev.source!==directFrame.contentWindow) return;
+    if(ev.origin!==DIRECT_BASE) return;
+    var m=ev.data;
+    if(!m || typeof m!=="object") return;
+    if(m.type==="biz.result"){ var cb=bizWait[m.id]; if(cb){ delete bizWait[m.id]; cb(m.data||null); } return; }
+    if(m.type==="biz.ack"){ var ac=bizWait[m.id]; if(ac){ delete bizWait[m.id]; ac(true); } return; }
+    if(m.type!=="sysmetrics.metrics" || !m.data) return;
+    directSeen=true;
+    applyMetrics(m.data); render();
+  }
+  var fastBusy=false;
+  async function fastTick(){
+    if(fastBusy) return;
+    if(!rd){ gwOk=false; } else try{
+      var H=await bizSlot("health",2500,function(){ return rd("health"); });
+      var ok=H&&H.running!==false&&H.connected!==false;
+      gwOk=!!ok;
+      var dd=document.getElementById("gwdot"); if(dd) dd.className="dot "+((ok||hostFresh())?"ok":"danger");
+      var el=(H&&H.eventLoop)||{};
+      var u=el.eventLoopUtilization; if(typeof u!=="number") u=el.utilization;
+      if(typeof u==="number"){ if(u>0&&u<=1)u=u*100; st.busy=Math.round(u); }
+      var q=el.p99Ms; if(typeof q!=="number") q=el.delayP99Ms;
+      if(typeof q==="number"){ maxP99=Math.max(maxP99,q); push(hist.p99,Math.round(q),CAP); set("vp99",Math.round(q)+" ms"); set("sp99","最大 "+Math.round(maxP99)+" ms"); spark(document.getElementById("cp99"),hist.p99); }
+      var ch=H&&H.channels; if(ch&&typeof ch==="object"){var ids=Object.keys(ch),on=ids.filter(function(k){var c=ch[k]||{};return c.running!==false&&c.connected!==false;}).length; set("vchan",on+"/"+ids.length);} else set("vchan","—");
+    }catch(e){ gwOk=false; }
+    render();
+  }
+  var slowBusy=false;
+  async function slowTick(){
+    if(!rd || slowBusy) return;
+    slowBusy=true;
+    try{ var s=await bizSlot("sess",2500,function(){ return rd("sessions.list",{limit:1}); }); var a=arr(s,["sessions","items","rows"]); var n=(s&&typeof s.totalCount==="number")?s.totalCount:(a?a.length:"—"); set("vsess",n); }catch(e){}
+    try{ var c=await bizSlot("cron",2500,function(){ return rd("cron.list"); }); var j=arr(c,["jobs","items","rows"]); set("vcron",j?j.length:"—"); }catch(e){}
+    try{ var g=await bizSlot("agent",2500,function(){ return rd("agents.list"); }); var ag=arr(g,["agents","items"]); set("vagent",ag?ag.length:"—"); }catch(e){}
+  }
+  function fit(grid,min){ if(!grid) return; var w=grid.clientWidth; if(!w) return; var n=grid.children.length; if(!n) return; var gap=10,best=1;
+    for(var d=1; d<=n; d++){ if(n%d) continue; if((w-gap*(d-1))/d>=min) best=d; }
+    var v="repeat("+best+",minmax(0,1fr))"; if(grid.__cols!==v){ grid.__cols=v; grid.style.gridTemplateColumns=v; } }
+  function relayout(){ fit(document.getElementById("gmain"),200); fit(document.getElementById("gact"),120); }
+  var raf=0; function schedule(){ if(raf) return; raf=requestAnimationFrame(function(){raf=0;relayout();}); }
+  try{ if(window.ResizeObserver) new ResizeObserver(schedule).observe(root); }catch(e){}
+  window.addEventListener("resize",schedule);
+  var tip=document.getElementById("tip");
+  root.addEventListener("mouseover",function(ev){ var t=ev.target.closest?ev.target.closest("[data-tip]"):null; if(!t) return; var d=tips[t.getAttribute("data-tip")]; if(!d) return;
+    tip.innerHTML="<b>"+d.t+"</b>"+d.r.map(function(r){return "<div class=\"r\"><span>"+r[0]+"</span><span>"+r[1]+"</span></div>";}).join("");
+    var rb=root.getBoundingClientRect(), tb=t.getBoundingClientRect(); tip.style.display="block"; var tw=tip.offsetWidth, th=tip.offsetHeight;
+    var tl=Math.max(4, Math.min(tb.left-rb.left, rb.width-tw-4));
+    var below=tb.bottom-rb.top+6, above=tb.top-rb.top-th-6;
+    var tt=(below+th<=rb.height)?below:(above>=4?above:Math.max(4, Math.min(below, rb.height-th-4)));
+    tip.style.left=tl+"px"; tip.style.top=tt+"px"; });
+  root.addEventListener("mouseout",function(ev){ var t=ev.target.closest?ev.target.closest("[data-tip]"):null; if(t) tip.style.display="none"; });
+  function refreshAll(){ hostTick(); fastTick(); slowTick(); }
+  function onNetwork(){ if(!document.hidden) refreshAll(); }
+  // Only the page the operator is actually looking at polls. Hidden tabs and
+  // widgets scrolled out of view stop their timers, so a dozen open sessions
+  // no longer multiply the gateway load.
+  var timers=[], beatTimer=0, relayoutTimer=setTimeout(relayout,250), onScreen=true, gapNow=0;
+  function startPolling(){
+    var gap = onScreen ? 3000 : 15000;
+    if(timers.length && gapNow === gap) return;
+    stopPolling();
+    refreshAll(); render();
+    timers=[setInterval(hostTick,gap), setInterval(fastTick,gap), setInterval(slowTick,gap)];
+    gapNow=gap;
+    beatTimer=setInterval(beat,1000);
+  }
+  function stopPolling(){
+    for(var i=0;i<timers.length;i++) clearInterval(timers[i]);
+    timers.length=0;
+    gapNow=0;
+    if(beatTimer){ clearInterval(beatTimer); beatTimer=0; }
+  }
+  function syncPolling(){
+    if(document.hidden){ stopPolling(); return; }
+    startPolling();
+  }
+  function onVisible(){ syncPolling(); }
+  window.addEventListener("message",onDirect);
+  startDirect();
+  document.addEventListener("visibilitychange",onVisible);
+  window.addEventListener("online",onNetwork);
+  window.addEventListener("offline",onNetwork);
+  syncPolling();
+  // Returned to the mount wrapper: stops timers/listeners without touching DOM,
+  // so a host unmount cannot leave an emptied widget behind.
+  return function stop(){
+    stopPolling();
+    clearTimeout(relayoutTimer);
+    window.removeEventListener("message",onDirect);
+    if(directFrame){ try{ directFrame.remove(); }catch(e){} directFrame=null; }
+    document.removeEventListener("visibilitychange",onVisible);
+    window.removeEventListener("online",onNetwork);
+    window.removeEventListener("offline",onNetwork);
+  };
+})();
+</script></body></html></body></html>

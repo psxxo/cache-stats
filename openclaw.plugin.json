@@ -1,43 +1,69 @@
 {
-  "id": "cache-stats",
-  "name": "Cache Stats",
-  "version": "1.1.1",
-  "description": "Composer cache hit-rate pill with a cache-structure popover.",
-  "categories": [
-    "other"
-  ],
-  "uiCapabilities": [
-    "accessory"
-  ],
-  "activation": {
-    "onStartup": true
-  },
-  "contracts": {},
-  "configSchema": {
+ "id": "cache-stats",
+ "name": "Cache Stats",
+ "version": "1.2.0",
+ "description": "Composer cache hit-rate pill with a cache-structure popover.",
+ "categories": [
+  "other"
+ ],
+ "uiCapabilities": [
+  "accessory"
+ ],
+ "activation": {
+  "onStartup": true
+ },
+ "contracts": {},
+ "configSchema": {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+   "pool": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "pool": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "url": {
-            "type": "string"
-          },
-          "token": {
-            "type": "string"
-          },
-          "intervalMs": {
-            "type": "number"
-          }
-        }
-      }
+     "enabled": {
+      "type": "boolean"
+     },
+     "url": {
+      "type": "string"
+     },
+     "token": {
+      "type": "string"
+     },
+     "intervalMs": {
+      "type": "number"
+     }
     }
-  },
-  "controlUi": {
-    "entry": "dist/control-ui/403eedc884fa/index.js"
+   },
+   "sysStatus": {
+    "type": "object",
+    "additionalProperties": true,
+    "description": "系统状态看板整包：host/metrics/sandbox/board/ui；详见 sys-status/README.md",
+    "properties": {
+     "host": {
+      "type": "string"
+     },
+     "metrics": {
+      "type": "object",
+      "additionalProperties": true
+     },
+     "sandbox": {
+      "type": "object",
+      "additionalProperties": true
+     },
+     "board": {
+      "type": "object",
+      "additionalProperties": true
+     },
+     "ui": {
+      "type": "object",
+      "additionalProperties": true
+     }
+    }
+   }
   }
+ },
+ "controlUi": {
+  "entry": "dist/control-ui/403eedc884fa/index.js"
+ }
 }

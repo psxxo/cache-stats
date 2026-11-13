@@ -1,0 +1,39 @@
+{
+ "host": "<host>",
+ "metrics": {
+  "port": 18575,
+  "bind": "0.0.0.0",
+  "intervalMs": 3000,
+  "cacheDir": "/data/work/sys-status-board/cache",
+  "cert": "~/.openclaw/tls/memgraph-cert.pem",
+  "key": "~/.openclaw/tls/memgraph-key.pem"
+ },
+ "sandbox": {
+  "port": 18574,
+  "targetPort": 18790,
+  "listen": "0.0.0.0",
+  "cert": "~/.openclaw/tls/memgraph-cert.pem",
+  "key": "~/.openclaw/tls/memgraph-key.pem"
+ },
+ "board": {
+  "widgetName": "sys-status",
+  "title": "系统监控",
+  "tabId": "main",
+  "size": "full",
+  "heightMode": "auto",
+  "gridCols": 4,
+  "netOrigins": [
+   "https://<host>:18575"
+  ],
+  "tools": [
+   "agents.list",
+   "cron.list",
+   "health",
+   "sessions.list"
+  ]
+ },
+ "ui": {
+  "metricsUrl": "https://<host>:18575/metrics.json?v=r6",
+  "metricsOrigin": "https://<host>:18575"
+ }
+}

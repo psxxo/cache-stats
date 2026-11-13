@@ -1,4 +1,13 @@
-# CHANGELOG
+# Changelog
+
+## 1.2.0 — 2026-11-13
+
+- 内置“系统状态看板”整包（sys-status/）：
+  - 卡片模板与渲染脚本（地址、网格列数、尺寸由配置注入，不再写死主机/端口）；
+  - 指标服务 sysmetrics（3s 采样、文件缓存、HTTPS 端点）；
+  - 沙箱入口反代（公开端口 → 网关内部沙箱端口）；
+  - 配置样例与安装/验收说明（sys-status/README.md）。
+- openclaw.plugin.json 增加 sysStatus 配置段；版本 1.2.0。
 
 ## 1.1.2 (2026-11-08)
 
