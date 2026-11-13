@@ -9,7 +9,9 @@
   "openclaw.plugin.json",
   "dist",
   "src",
-  "lib"
+  "lib",
+  "sys-status",
+  "scripts"
  ],
  "openclaw": {
   "extensions": [
