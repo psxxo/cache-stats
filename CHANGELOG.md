@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 — 2026-11-13
+
+- 打包清单补齐：package.json files 增加 sys-status、scripts，避免发布包漏掉看板整包。
+- 发布流程按新规程补跑：inspect / doctor 预检通过（仅存量 record-missing 警告）；pack 失败为 legacy surface 形态已知限制。
+
 ## 1.2.0 — 2026-11-13
 
 - 内置“系统状态看板”整包（sys-status/）：

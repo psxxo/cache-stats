@@ -1,7 +1,7 @@
 {
  "id": "cache-stats",
  "name": "Cache Stats",
- "version": "1.2.0",
+ "version": "1.2.1",
  "description": "Composer cache hit-rate pill with a cache-structure popover.",
  "categories": [
   "other"
