@@ -19,7 +19,10 @@ import { defineControlUiPlugin } from "openclaw/plugin-sdk/control-ui";
 
 const PLUGIN_ID = "cache-stats";
 const METHOD = "cache-stats.session";
-const REFRESH_MS = 30_000;
+const REFRESH_MS = 5_000;
+// A pane switch refetches unless the last read is younger than this, so a
+// rapid pane flit cannot turn into a request storm.
+const ACTIVATE_MS = 1_000;
 const Z_INDEX = 2147482999;
 const PILL_HEIGHT = 22;
 const PANEL_WIDTH = 392;
@@ -558,7 +561,7 @@ export default defineControlUiPlugin({
           const hasSession = Boolean(sessionKey);
           wrapper.style.display = presented && paneVisible && hasSession ? "" : "none";
           // Poll only while this pane is the one on screen. Activation fires one
-          // request immediately, then a steady REFRESH_MS cadence; a cached pane,
+          // request immediately, then a steady 5 s cadence; a cached pane,
           // a background tab or a pane with no session costs nothing at all.
           setActive(presented && paneVisible && hasSession && !document.hidden);
 
@@ -990,7 +993,7 @@ export default defineControlUiPlugin({
             refreshTimer = null;
             return;
           }
-          if (Date.now() - lastLoadAt >= REFRESH_MS) void load();
+          if (Date.now() - lastLoadAt >= ACTIVATE_MS) void load();
           scheduleNext();
         };
         const onVisibility = () => {

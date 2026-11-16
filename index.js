@@ -271,7 +271,17 @@ export default definePluginEntry({
     // admission queue gave up at 30 s and unrelated requests failed with it.
     // Collapse the load at its source: one read per session per TTL, and every
     // concurrent caller shares the in-flight read.
-    const STATS_TTL_MS = 15_000;
+    const STATS_TTL_MS = 2_000;
+
+/** 会话事件版本号；取不到时返回 null，调用方按未命中处理。 */
+const statsVersion = async (sessionKey) => {
+  const agentId = agentOf(sessionKey);
+  const sessionId = sessionIdOf(sessionKey);
+  if (!agentId || !sessionId) return null;
+  const store = await import(join(ENGINE_DIR, "store.mjs"));
+  return store.sessionVersion(agentId, sessionId);
+};
+
     const statsCache = new Map();
     const statsPending = new Map();
     const cachedSessionStats = (sessionKey, options) => {
@@ -280,14 +290,18 @@ export default definePluginEntry({
       if (hit && Date.now() - hit.at < STATS_TTL_MS) return Promise.resolve(hit.value);
       const running = statsPending.get(key);
       if (running) return running;
-      const run = sessionStats(sessionKey, options)
-        .then((value) => {
-          statsCache.set(key, { at: Date.now(), value });
-          return value;
-        })
-        .finally(() => {
-          statsPending.delete(key);
-        });
+      const run = (async () => {
+        const version = await statsVersion(sessionKey).catch(() => null);
+        if (hit && version && hit.version === version) {
+          statsCache.set(key, { at: Date.now(), value: hit.value, version });
+          return hit.value;
+        }
+        const value = await sessionStats(sessionKey, options);
+        statsCache.set(key, { at: Date.now(), value, version });
+        return value;
+      })().finally(() => {
+        statsPending.delete(key);
+      });
       statsPending.set(key, run);
       return run;
     };
